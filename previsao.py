@@ -109,46 +109,51 @@ def weather_icon(weather):
     }
     return icons.get(weather, '❓')
 
-# Função para exibir a previsão
-def show_weather():
-    # Recuperar os dados da previsão
-    daily_df_full = get_weather_data()
+# Iniciando a interface do Streamlit
+st.title('Tempo em Caxias do Sul')
 
-    if daily_df_full.empty:
-        return  # Se não houver dados, não exibe nada
+# Botão de atualização
+if st.button("Atualizar previsão"):
+    daily_df_full = fetch_weather_data()
+else:
+    daily_df_full = fetch_weather_data()
 
-    # Exibindo o título da página
-    st.title('Tempo em Caxias do Sul')
+if daily_df_full is not None:
+    st.subheader('Previsão para os próximos dias ↻')
 
-    # Exibindo todos os dias em 2 colunas
-    st.subheader('Previsão para os próximos dias')
-
-    # Criando 2 colunas para exibir os dias lado a lado
     cols = st.columns(2)
 
-    # Exibindo todos os dias em duas colunas
     for i, (index, row) in enumerate(daily_df_full.iterrows()):
         icon = weather_icon(row['weather_main'])
         with cols[i % 2]:  # Alterna entre as duas colunas
-            st.markdown(f"**{row['date'].date()}** {icon}", unsafe_allow_html=True)
-            st.markdown(f"Temperatura: {row['temp_min']}°C a {row['temp_max']}°C")
-            st.markdown(f"Umidade: {row['humidity_avg']}%")
-            st.markdown(f"Condição: {row['weather_main']}")
+            st.markdown(f"<h3>{row['date'].strftime('%Y-%m-%d')} {icon}</h3>", unsafe_allow_html=True)
+            
+            # Exibindo temperatura com barra visual
+            temp_bar = f"""
+                <div style='display: flex; align-items: center;'>
+                    <span style='width: 50px;'>{row['temp_min']}°C</span>
+                    <div style='background: linear-gradient(to right, #00aaff, #ffaa00); 
+                                width: 100%; 
+                                height: 10px; 
+                                border-radius: 5px; 
+                                margin: 0 10px; 
+                                position: relative;'>
+                        <div style='position: absolute; 
+                                    left: {int((row['temp_min'] - row['temp_min']) / (row['temp_max'] - row['temp_min']) * 100)}%; 
+                                    width: 2px; 
+                                    height: 15px; 
+                                    background: #005577;'></div>
+                        <div style='position: absolute; 
+                                    left: {int((row['temp_max'] - row['temp_min']) / (row['temp_max'] - row['temp_min']) * 100)}%; 
+                                    width: 2px; 
+                                    height: 15px; 
+                                    background: #ff7700;'></div>
+                    </div>
+                    <span style='width: 50px;'>{row['temp_max']}°C</span>
+                </div>
+            """
+            st.markdown(temp_bar, unsafe_allow_html=True)
+
+            st.markdown(f"**Umidade**: {row['humidity_avg']}%")
+            st.markdown(f"**Condição**: {row['weather_main']}")
             st.write('---')
-
-# Função principal
-def main():
-    st.sidebar.title("Configurações")
-    st.sidebar.markdown("Clique no botão abaixo para atualizar os dados de previsão.")
-    
-    # Botão para atualizar a previsão
-    if st.sidebar.button('Atualizar Previsão'):
-        with st.spinner('Atualizando previsões...'):
-            time.sleep(2)  # Simula tempo de carregamento
-            show_weather()  # Exibe os dados da previsão
-    else:
-        # Exibe os dados inicialmente
-        show_weather()
-
-if __name__ == '__main__':
-    main()
