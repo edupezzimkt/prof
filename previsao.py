@@ -80,6 +80,17 @@ st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 # Inicia o DataFrame
 daily_df_full = fetch_weather_data()
 
+# Função para mapear o clima para um ícone
+def weather_icon(weather):
+    icons = {
+        'chuva leve': '🌧️',
+        'algumas nuvens': '⛅',
+        'céu limpo': '☀️',
+        'nublado': '☁️',
+        'chuva forte': '🌧️🌧️'
+    }
+    return icons.get(weather, '❓')
+    
 # Título da interface
 st.title('Previsão do Tempo em Caxias do Sul')
 
