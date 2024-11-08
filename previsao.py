@@ -135,3 +135,11 @@ for i, (index, row) in enumerate(daily_df_full.iterrows()):
         st.markdown(f"**Umidade**: {row['humidity_avg']}%")
         st.markdown(f"**Condição**: {row['weather_main']}")
         st.write('---')
+
+# CSS para esconder o rodapé do Streamlit
+hide_streamlit_footer = """
+    <style>
+    footer {visibility: hidden;}
+    </style>
+    """
+st.markdown(hide_streamlit_footer, unsafe_allow_html=True)
