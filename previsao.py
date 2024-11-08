@@ -83,7 +83,7 @@ def weather_icon(weather):
         'chuva leve': '🌧️',
         'algumas nuvens': '⛅',
         'céu limpo': '☀️',
-        'nuvens': '☁️',
+        'nublado': '☁️',
         'chuva forte': '🌧️🌧️'
     }
     return icons.get(weather, '❓')
@@ -97,7 +97,7 @@ def show_weather():
         return  # Se não houver dados, não exibe nada
 
     # Exibindo o título da página
-    st.title('Previsão do Tempo em Caxias do Sul')
+    st.title('Tempo em Caxias do Sul')
 
     # Exibindo todos os dias em 2 colunas
     st.subheader('Previsão para os próximos dias')
