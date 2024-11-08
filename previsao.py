@@ -65,7 +65,7 @@ def fetch_weather_data():
         st.error("Falha ao obter dados da previsão do tempo.")
         return pd.DataFrame()
 
-# CSS para esconder elementos desnecessários, incluindo o rodapé e créditos
+# CSS para esconder elementos desnecessários, incluindo o rodapé e créditos do criador do aplicativo
 hide_streamlit_style = """
     <style>
     MainMenu {visibility: hidden;}
@@ -74,9 +74,8 @@ hide_streamlit_style = """
     [data-testid="stSidebarNav"] {display: none;}  /* Esconde a barra lateral */
     div[role="button"] > svg {display: none;}  /* Esconde o botão flutuante no mobile */
 
-    /* Oculta o ícone e texto de créditos do Streamlit */
-    footer:has([data-testid="stFooterContent"]) {display: none;}  /* Alguns rodapés personalizados */
-    div[data-testid="stDecoration"] {display: none;}  /* Ícones e créditos adicionais */
+    /* Oculta o ícone e texto de créditos do Streamlit e do criador do app */
+    ._profilePreview_51w34_63 {display: none;}  /* Esconde o contêiner de perfil do criador */
     </style>
     """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
