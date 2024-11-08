@@ -2,82 +2,8 @@ import requests
 import pandas as pd
 import streamlit as st
 import datetime
-import time
 
-# Função para obter os dados da previsão do tempo da API
-def get_weather_data():
-    # Defina a chave de API e o ID da cidade
-    api_key = '680e436df2f7321be79cef2383e624a8'
-    city_id = '3466537'  # Caxias do Sul
-    base_url = 'http://api.openweathermap.org/data/2.5/forecast'
-
-    # Crie a URL completa para a solicitação
-    url = f"{base_url}?id={city_id}&appid={api_key}&units=metric&lang=pt_br"
-
-    # Faça a solicitação para a API do OpenWeatherMap
-    response = requests.get(url)
-
-    # Verifique se a solicitação foi bem-sucedida
-    if response.status_code == 200:
-        weather_data = response.json()
-        
-        # Estruturar em um DataFrame
-        forecast_list = weather_data['list']
-        df = pd.json_normalize(forecast_list)
-        
-        # Ajustar as colunas para um formato mais amigável
-        df.columns = df.columns.str.replace('main.', 'main_', regex=False)
-        df.columns = df.columns.str.replace('wind.', 'wind_', regex=False)
-        df.columns = df.columns.str.replace('clouds.', 'clouds_', regex=False)
-        df.columns = df.columns.str.replace('sys.', 'sys_', regex=False)
-        df.columns = df.columns.str.replace('weather.', 'weather_', regex=False)
-
-        # Expandir a coluna 'weather'
-        weather_expanded = df['weather'].apply(lambda x: x[0] if len(x) > 0 else {})
-
-        # Criação de novas colunas a partir dos dicionários extraídos
-        df['weather_id'] = weather_expanded.apply(lambda x: x.get('id', None))
-        df['weather_main'] = weather_expanded.apply(lambda x: x.get('main', None))
-        df['weather_description'] = weather_expanded.apply(lambda x: x.get('description', None))
-        df['weather_icon'] = weather_expanded.apply(lambda x: x.get('icon', None))
-
-        # Remover a coluna 'weather' original
-        df.drop(columns=['weather'], inplace=True)
-
-        # Converter dt_txt para datetime
-        df['dt_txt'] = pd.to_datetime(df['dt_txt'])
-
-        # Extrair apenas a data para agrupamento
-        df['date'] = df['dt_txt'].dt.date
-
-        # Agrupar por data e calcular os valores desejados
-        daily_df_full = df.groupby('date').agg({
-            'main_temp_min': 'min',
-            'main_temp_max': 'max',
-            'main_humidity': 'mean',
-            'weather_description': lambda x: x.mode()[0] if not x.mode().empty else 'N/A'
-        }).reset_index()
-
-        # Arredondar a média da umidade para números inteiros
-        daily_df_full['main_humidity'] = daily_df_full['main_humidity'].round().astype(int)
-
-        # Renomear as colunas para melhor clareza
-        daily_df_full.rename(columns={
-            'main_temp_min': 'temp_min',
-            'main_temp_max': 'temp_max',
-            'main_humidity': 'humidity_avg',
-            'weather_description': 'weather_main'
-        }, inplace=True)
-
-        # Garantindo que a coluna 'date' seja do tipo datetime
-        daily_df_full['date'] = pd.to_datetime(daily_df_full['date'], errors='coerce')
-
-        return daily_df_full
-    else:
-        st.error(f"Erro ao buscar os dados. Status: {response.status_code}")
-        return pd.DataFrame()  # Retorna um DataFrame vazio se houver erro
-
-# CSS para esconder o botão flutuante no mobile usando seletor mais específico
+# CSS para esconder elementos indesejados na interface do Streamlit
 hide_streamlit_style = """
     <style>
     /* Esconde a barra de ferramentas no desktop */
@@ -98,6 +24,56 @@ hide_streamlit_style = """
     """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
+# Função para obter a previsão do tempo
+def fetch_weather_data():
+    api_key = '680e436df2f7321be79cef2383e624a8'
+    city_id = '3466537'  # Caxias do Sul
+    base_url = 'http://api.openweathermap.org/data/2.5/forecast'
+    url = f"{base_url}?id={city_id}&appid={api_key}&units=metric&lang=pt_br"
+
+    response = requests.get(url)
+    if response.status_code == 200:
+        weather_data = response.json()
+        forecast_list = weather_data['list']
+        df = pd.json_normalize(forecast_list)
+        
+        # Ajustar as colunas para um formato mais amigável
+        df.columns = df.columns.str.replace('main.', 'main_', regex=False)
+        df.columns = df.columns.str.replace('wind.', 'wind_', regex=False)
+        df.columns = df.columns.str.replace('clouds.', 'clouds_', regex=False)
+        df.columns = df.columns.str.replace('sys.', 'sys_', regex=False)
+        df.columns = df.columns.str.replace('weather.', 'weather_', regex=False)
+        
+        weather_expanded = df['weather'].apply(lambda x: x[0] if len(x) > 0 else {})
+        df['weather_id'] = weather_expanded.apply(lambda x: x.get('id', None))
+        df['weather_main'] = weather_expanded.apply(lambda x: x.get('main', None))
+        df['weather_description'] = weather_expanded.apply(lambda x: x.get('description', None))
+        df['weather_icon'] = weather_expanded.apply(lambda x: x.get('icon', None))
+        df.drop(columns=['weather'], inplace=True)
+        
+        df['dt_txt'] = pd.to_datetime(df['dt_txt'])
+        df['date'] = df['dt_txt'].dt.date
+        
+        daily_df_full = df.groupby('date').agg({
+            'main_temp_min': 'min',
+            'main_temp_max': 'max',
+            'main_humidity': 'mean',
+            'weather_description': lambda x: x.mode()[0] if not x.mode().empty else 'N/A'
+        }).reset_index()
+        
+        daily_df_full['main_humidity'] = daily_df_full['main_humidity'].round().astype(int)
+        
+        daily_df_full.rename(columns={
+            'main_temp_min': 'temp_min',
+            'main_temp_max': 'temp_max',
+            'main_humidity': 'humidity_avg',
+            'weather_description': 'weather_main'
+        }, inplace=True)
+        
+        return daily_df_full
+    else:
+        st.error("Não foi possível obter os dados da API.")
+        return None
 
 # Função para mapear o clima para um ícone
 def weather_icon(weather):
@@ -105,7 +81,7 @@ def weather_icon(weather):
         'chuva leve': '🌧️',
         'algumas nuvens': '⛅',
         'céu limpo': '☀️',
-        'nublado': '☁️',
+        'nuvens': '☁️',
         'chuva forte': '🌧️🌧️'
     }
     return icons.get(weather, '❓')
@@ -113,15 +89,12 @@ def weather_icon(weather):
 # Iniciando a interface do Streamlit
 st.title('Tempo em Caxias do Sul')
 
-# Botão de atualização
-if st.button("Atualizar previsão"):
-    daily_df_full = fetch_weather_data()
-else:
-    daily_df_full = fetch_weather_data()
+# Executando a função para obter os dados de previsão
+daily_df_full = fetch_weather_data()
 
 # Exibindo a previsão se os dados foram obtidos com sucesso
 if daily_df_full is not None:
-    st.subheader('Previsão para os próximos dias ↻')
+    st.subheader('Previsão para os próximos dias')
 
     cols = st.columns(2)
 
@@ -141,12 +114,12 @@ if daily_df_full is not None:
                                 margin: 0 10px; 
                                 position: relative;'>
                         <div style='position: absolute; 
-                                    left: {int((row['temp_min'] - row['temp_min']) / (row['temp_max'] - row['temp_min']) * 100)}%; 
+                                    left: 0%; 
                                     width: 2px; 
                                     height: 15px; 
                                     background: #005577;'></div>
                         <div style='position: absolute; 
-                                    left: {int((row['temp_max'] - row['temp_min']) / (row['temp_max'] - row['temp_min']) * 100)}%; 
+                                    left: 100%; 
                                     width: 2px; 
                                     height: 15px; 
                                     background: #ff7700;'></div>
