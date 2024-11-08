@@ -73,9 +73,10 @@ hide_streamlit_style = """
     header {visibility: hidden;}  /* Esconde o cabeçalho */
     [data-testid="stSidebarNav"] {display: none;}  /* Esconde a barra lateral */
     div[role="button"] > svg {display: none;}  /* Esconde o botão flutuante no mobile */
-    
-    /* Esconde o texto "Feito com Streamlit" e "Criado por XXX" */
-    footer:has(p) {display: none;}  /* Para algumas versões do Streamlit */
+
+    /* Oculta o ícone e texto de créditos do Streamlit */
+    footer:has([data-testid="stFooterContent"]) {display: none;}  /* Alguns rodapés personalizados */
+    div[data-testid="stDecoration"] {display: none;}  /* Ícones e créditos adicionais */
     </style>
     """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
