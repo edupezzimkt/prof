@@ -113,7 +113,7 @@ for i, (index, row) in enumerate(daily_df_full.iterrows()):
         temp_bar = f"""
             <div style='display: flex; align-items: center;'>
                 <span style='width: 50px;'>{row['temp_min']}°C</span>
-                <div style='background: linear-gradient(to right, #00aaff, #ffaa00); 
+                <div style='background: linear-gradient(to right, #00aaff, #ff0026); 
                             width: 100%; 
                             height: 10px; 
                             border-radius: 5px; 
