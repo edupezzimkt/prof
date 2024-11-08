@@ -65,25 +65,8 @@ def fetch_weather_data():
         st.error("Falha ao obter dados da previsão do tempo.")
         return pd.DataFrame()
 
-# Convertendo a coluna 'date' para datetime, caso seja string
-daily_df_full['date'] = pd.to_datetime(daily_df_full['date'])
 
-# CSS para esconder elementos desnecessários, incluindo o rodapé e créditos do criador do aplicativo
-hide_streamlit_style = """
-    <style>
-    MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}  /* Esconde o rodapé */
-    header {visibility: hidden;}  /* Esconde o cabeçalho */
-    [data-testid="stSidebarNav"] {display: none;}  /* Esconde a barra lateral */
-    div[role="button"] > svg {display: none;}  /* Esconde o botão flutuante no mobile */
-
-    /* Oculta o ícone e texto de créditos do Streamlit e do criador do app */
-    ._profilePreview_51w34_63 {display: none;}  /* Esconde o contêiner de perfil do criador */
-    </style>
-    """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-
-# Inicia o DataFrame
+# Inicia o DataFrame apenas chamando a função fetch_weather_data
 daily_df_full = fetch_weather_data()
 
 # Função para mapear o clima para um ícone
@@ -96,7 +79,20 @@ def weather_icon(weather):
         'chuva forte': '🌧️🌧️'
     }
     return icons.get(weather, '❓')
-    
+
+# CSS para esconder elementos desnecessários, incluindo o rodapé e créditos do criador do aplicativo
+hide_streamlit_style = """
+    <style>
+    MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}  /* Esconde o rodapé */
+    header {visibility: hidden;}  /* Esconde o cabeçalho */
+    [data-testid="stSidebarNav"] {display: none;}  /* Esconde a barra lateral */
+    div[role="button"] > svg {display: none;}  /* Esconde o botão flutuante no mobile */
+    ._profilePreview_51w34_63 {display: none;}  /* Esconde o contêiner de perfil do criador */
+    </style>
+    """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 # Título da interface
 st.title('Tempo em Caxias do Sul 🌤️')
 
@@ -110,7 +106,7 @@ cols = st.columns(1)
 for i, (index, row) in enumerate(daily_df_full.iterrows()):
     icon = weather_icon(row['weather_main'])
     with cols[i % 1]:  # Alterna entre as duas colunas
-        st.markdown(f"<h3>{row['date']} {icon}</h3>", unsafe_allow_html=True)
+        st.markdown(f"<h3>{row['data_semana']} {icon}</h3>", unsafe_allow_html=True)
         
         # Exibindo temperatura com barra visual
         temp_bar = f"""
