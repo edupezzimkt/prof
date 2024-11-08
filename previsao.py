@@ -135,5 +135,3 @@ for i, (index, row) in enumerate(daily_df_full.iterrows()):
         st.markdown(f"**Umidade**: {row['humidity_avg']}%")
         st.markdown(f"**Condição**: {row['weather_main']}")
         st.write('---')
-else:
-    st.write("Nenhuma previsão disponível no momento.")
