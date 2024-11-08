@@ -77,6 +77,27 @@ def get_weather_data():
         st.error(f"Erro ao buscar os dados. Status: {response.status_code}")
         return pd.DataFrame()  # Retorna um DataFrame vazio se houver erro
 
+# CSS para esconder o botão flutuante no mobile usando seletor mais específico
+hide_streamlit_style = """
+    <style>
+    /* Esconde a barra de ferramentas no desktop */
+    MainMenu {visibility: hidden;}
+    
+    /* Esconde o rodapé */
+    footer {visibility: hidden;}
+    
+    /* Esconde o cabeçalho */
+    header {visibility: hidden;}
+
+    /* Esconde o botão flutuante no mobile com seletor CSS baseado no XPath */
+    [data-testid="stSidebarNav"] {display: none;} /* Este deve funcionar para a versão mais recente do Streamlit */
+    
+    /* Seleção direta com base no XPath convertido */
+    div[role="button"] > svg {display: none;} /* Seletor CSS para o botão flutuante do menu */
+    </style>
+    """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 # Função para mapear o clima para um ícone
 def weather_icon(weather):
     icons = {
