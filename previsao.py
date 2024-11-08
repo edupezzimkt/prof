@@ -106,7 +106,7 @@ cols = st.columns(1)
 for i, (index, row) in enumerate(daily_df_full.iterrows()):
     icon = weather_icon(row['weather_main'])
     with cols[i % 1]:  # Alterna entre as duas colunas
-        st.markdown(f"<h3>{row['data_semana']} {icon}</h3>", unsafe_allow_html=True)
+        st.markdown(f"<h3>{row['date']} {icon}</h3>", unsafe_allow_html=True)
         
         # Exibindo temperatura com barra visual
         temp_bar = f"""
