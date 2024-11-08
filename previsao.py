@@ -98,6 +98,7 @@ hide_streamlit_style = """
     """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
+
 # Função para mapear o clima para um ícone
 def weather_icon(weather):
     icons = {
@@ -157,3 +158,5 @@ if daily_df_full is not None:
             st.markdown(f"**Umidade**: {row['humidity_avg']}%")
             st.markdown(f"**Condição**: {row['weather_main']}")
             st.write('---')
+else:
+    st.write("Nenhuma previsão disponível no momento.")
