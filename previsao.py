@@ -95,7 +95,7 @@ def weather_icon(weather):
     return icons.get(weather, '❓')
     
 # Título da interface
-st.title('Tempo em Caxias do Sul')
+st.title('Tempo em Caxias do Sul 🌤️')
 
 # Botão para atualizar os dados
 if st.button('Atualizar Previsão'):
