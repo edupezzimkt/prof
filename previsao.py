@@ -103,7 +103,7 @@ if st.button('Atualizar Previsão'):
 
 # Exibe a previsão em duas colunas
 st.subheader('Previsão para os próximos dias')
-cols = st.columns(2)
+cols = st.columns(1)
 for i, (index, row) in enumerate(daily_df_full.iterrows()):
     icon = weather_icon(row['weather_main'])
     with cols[i % 2]:  # Alterna entre as duas colunas
