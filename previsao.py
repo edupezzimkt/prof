@@ -65,14 +65,17 @@ def fetch_weather_data():
         st.error("Falha ao obter dados da previsão do tempo.")
         return pd.DataFrame()
 
-# CSS para esconder elementos desnecessários
+# CSS para esconder elementos desnecessários, incluindo o rodapé e créditos
 hide_streamlit_style = """
     <style>
     MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    [data-testid="stSidebarNav"] {display: none;}
-    div[role="button"] > svg {display: none;}
+    footer {visibility: hidden;}  /* Esconde o rodapé */
+    header {visibility: hidden;}  /* Esconde o cabeçalho */
+    [data-testid="stSidebarNav"] {display: none;}  /* Esconde a barra lateral */
+    div[role="button"] > svg {display: none;}  /* Esconde o botão flutuante no mobile */
+    
+    /* Esconde o texto "Feito com Streamlit" e "Criado por XXX" */
+    footer:has(p) {display: none;}  /* Para algumas versões do Streamlit */
     </style>
     """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
