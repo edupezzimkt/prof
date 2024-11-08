@@ -65,6 +65,26 @@ def fetch_weather_data():
         st.error("Falha ao obter dados da previsão do tempo.")
         return pd.DataFrame()
 
+# Convertendo a coluna 'date' para datetime, caso seja string
+daily_df_full['date'] = pd.to_datetime(daily_df_full['date'])
+
+
+import locale
+# Dicionário de mapeamento dos dias da semana
+dias_semana = {
+    0: 'segunda-feira',
+    1: 'terça-feira',
+    2: 'quarta-feira',
+    3: 'quinta-feira',
+    4: 'sexta-feira',
+    5: 'sábado',
+    6: 'domingo'
+}
+
+# Adiciona a coluna 'dia_semana' com o nome completo do dia da semana
+daily_df_full['dia_semana'] = daily_df_full['date'].dt.dayofweek.map(dias_semana)
+
+
 # CSS para esconder elementos desnecessários, incluindo o rodapé e créditos do criador do aplicativo
 hide_streamlit_style = """
     <style>
@@ -137,6 +157,7 @@ for i, (index, row) in enumerate(daily_df_full.iterrows()):
 
         st.markdown(f"**Umidade**: {row['humidity_avg']}%")
         st.markdown(f"**Condição**: {row['weather_main']}")
+        st.markdown(f"**Dia da semana**: {row['dia_semana']}")
         st.write('---')
 
 # CSS para esconder o rodapé do Streamlit
