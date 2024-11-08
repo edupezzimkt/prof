@@ -81,7 +81,7 @@ def weather_icon(weather):
         'chuva leve': '🌧️',
         'algumas nuvens': '⛅',
         'céu limpo': '☀️',
-        'nuvens': '☁️',
+        'nublado': '☁️',
         'chuva forte': '🌧️🌧️'
     }
     return icons.get(weather, '❓')
