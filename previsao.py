@@ -91,10 +91,38 @@ if st.button('Atualizar Previsão'):
 st.subheader('Previsão para os próximos dias')
 cols = st.columns(2)
 for i, (index, row) in enumerate(daily_df_full.iterrows()):
-    icon = '🌧️' if 'chuva' in row['weather_main'] else '☀️'
+    icon = weather_icon(row['weather_main'])
     with cols[i % 2]:  # Alterna entre as duas colunas
-        st.markdown(f"**{row['date']}** {icon}", unsafe_allow_html=True)
-        st.write(f"Temperatura: {row['temp_min']}°C - {row['temp_max']}°C")
-        st.write(f"Umidade: {row['humidity_avg']}%")
-        st.write(f"Condição: {row['weather_main']}")
+        st.markdown(f"<h3>{row['date']} {icon}</h3>", unsafe_allow_html=True)
+        
+        # Exibindo temperatura com barra visual
+        temp_bar = f"""
+            <div style='display: flex; align-items: center;'>
+                <span style='width: 50px;'>{row['temp_min']}°C</span>
+                <div style='background: linear-gradient(to right, #00aaff, #ffaa00); 
+                            width: 100%; 
+                            height: 10px; 
+                            border-radius: 5px; 
+                            margin: 0 10px; 
+                            position: relative;'>
+                    <div style='position: absolute; 
+                                left: 0%; 
+                                width: 2px; 
+                                height: 15px; 
+                                background: #005577;'></div>
+                    <div style='position: absolute; 
+                                left: 100%; 
+                                width: 2px; 
+                                height: 15px; 
+                                background: #ff7700;'></div>
+                </div>
+                <span style='width: 50px;'>{row['temp_max']}°C</span>
+            </div>
+        """
+        st.markdown(temp_bar, unsafe_allow_html=True)
+
+        st.markdown(f"**Umidade**: {row['humidity_avg']}%")
+        st.markdown(f"**Condição**: {row['weather_main']}")
         st.write('---')
+else:
+    st.write("Nenhuma previsão disponível no momento.")
